@@ -1,0 +1,21 @@
+# Node/Electron
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+package-lock.json
+
+# Build outputs
+dist/
+dist-ssr/
+dist-electron/
+release/
+out/
+build/
+coverage/
+*.log
+
+# OS junk
+.DS_Store
+Thumbs.db
