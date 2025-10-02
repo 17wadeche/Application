@@ -12,9 +12,10 @@
       "buildResources": "build"
     },
     "files": [
-      { "from": "web",           "to": "web",           "filter": ["**/*"] },
-      { "from": "dist-electron", "to": "dist-electron", "filter": ["**/*"] },
-      "package.json"
+      "web/**",
+      "dist-electron/**",
+      "package.json",
+      "!node_modules/.cache"
     ],
     "extraMetadata": {
       "main": "dist-electron/main.js"
@@ -24,7 +25,8 @@
       "target": [
         "msix",
         "appx",
-        "msi"
+        "msi",
+        "dir"
       ],
       "icon": "build/icon.png"
     },
@@ -40,12 +42,12 @@
   },
   "main": "dist-electron/main.js",
   "scripts": {
-    "clean": "rimraf web dist-electron release",
-    "dev": "rimraf dist-electron && concurrently -k \"vite\" \"tsc -p tsconfig.electron.json -w\" \"wait-on http://localhost:5173 file:dist-electron/main.js && cross-env VITE_DEV=1 electron .\"",
+    "clean": "powershell -NoProfile -ExecutionPolicy Bypass Remove-Item -Recurse -Force .\\web, .\\dist-electron, .\\release -ErrorAction SilentlyContinue",
     "build:web": "vite build",
     "build:electron": "tsc -p tsconfig.electron.json",
-    "dist:msix": "npm run clean && npm run build:web && npm run build:electron && electron-builder --win appx",
-    "dist:msi":  "npm run clean && npm run build:web && npm run build:electron && electron-builder --win msi"
+    "pack:dir": "electron-builder --win --dir",
+    "dist:msi": "electron-builder --win msi",
+    "dist:msix": "electron-builder --win appx"
   },
   "dependencies": {
     "react": "^18.3.1",
