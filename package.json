@@ -7,25 +7,29 @@
   "build": {
     "appId": "com.yourcompany.balancetrack",
     "productName": "BalanceTrack",
-    "directories": { "output": "release" },
+    "directories": { "output": "release", "buildResources": "build" },
     "files": [
       "dist/**",
       "dist-electron/**",
+      "package.json",
       "!node_modules/.cache"
     ],
     "asar": true,
     "win": {
-      "target": ["MSIX"],
-      "icon": "build/icon.png"
+      "target": ["MSIX", "appx", "msi" ],
+      "icon": "build/icon.png",
+      "publisherName": "Chey Wade"
     },
     "appx": {
       "identityName": "YourCompany.BalanceTrack",
       "publisherDisplayName": "Your Company",
+      "publisherName": "Chey Wade",
       "backgroundColor": "#0f172a",
+      "languages": ["en-US"],
       "capabilities": ["internetClient"]
     }
   },
-  "main": "dist-electron/main.ts",
+  "main": "dist-electron/main.js",
   "scripts": {
     "dev": "concurrently -k \"vite\" \"wait-on http://localhost:5173 && cross-env VITE_DEV=1 electron .\"",
     "build:web": "vite build",
