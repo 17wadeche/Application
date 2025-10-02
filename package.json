@@ -12,41 +12,40 @@
       "buildResources": "build"
     },
     "files": [
-      "dist/**",
-      "dist-electron/**",
-      "package.json",
-      "!node_modules/.cache"
+      { "from": "web",           "to": "web",           "filter": ["**/*"] },
+      { "from": "dist-electron", "to": "dist-electron", "filter": ["**/*"] },
+      "package.json"
     ],
+    "extraMetadata": {
+      "main": "dist-electron/main.js"
+    },
     "asar": true,
     "win": {
       "target": [
-        "MSIX",
+        "msix",
         "appx",
         "msi"
       ],
-      "icon": "build/icon.png",
-      "publisherName": "Chey Wade"
+      "icon": "build/icon.png"
     },
     "appx": {
       "identityName": "YourCompany.BalanceTrack",
-      "publisherDisplayName": "Your Company",
-      "publisherName": "Chey Wade",
+      "publisherDisplayName": "Chey Wade",
+      "publisher": "CN=Chey Wade",
       "backgroundColor": "#0f172a",
       "languages": [
         "en-US"
-      ],
-      "capabilities": [
-        "internetClient"
       ]
     }
   },
   "main": "dist-electron/main.js",
   "scripts": {
-    "dev": "rimraf dist-electron && tsc -p tsconfig.electron.json && concurrently -k \"vite\" \"tsc -p tsconfig.electron.json -w\" \"wait-on http://localhost:5173 file:dist-electron/main.js && cross-env VITE_DEV=1 electron .\"",
+    "clean": "rimraf web dist-electron release",
+    "dev": "rimraf dist-electron && concurrently -k \"vite\" \"tsc -p tsconfig.electron.json -w\" \"wait-on http://localhost:5173 file:dist-electron/main.js && cross-env VITE_DEV=1 electron .\"",
     "build:web": "vite build",
     "build:electron": "tsc -p tsconfig.electron.json",
-    "dist:msix": "npm run build:web && npm run build:electron && electron-builder --win appx",
-    "dist:msi": "npm run build:web && npm run build:electron && electron-builder --win msi"
+    "dist:msix": "npm run clean && npm run build:web && npm run build:electron && electron-builder --win appx",
+    "dist:msi":  "npm run clean && npm run build:web && npm run build:electron && electron-builder --win msi"
   },
   "dependencies": {
     "react": "^18.3.1",
