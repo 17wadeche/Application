@@ -1,38 +1,31 @@
-import { app, BrowserWindow, shell } from "electron";
+import { app, BrowserWindow } from "electron";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
-const isDev = !!process.env.VITE_DEV;
-let win: BrowserWindow | null = null;
+const isDev = process.env.VITE_DEV === "1";
 async function createWindow() {
-  win = new BrowserWindow({
+  const win = new BrowserWindow({
     width: 1200,
     height: 800,
-    title: "BalanceTrack",
-    autoHideMenuBar: true,
-    backgroundColor: "#0f172a",
     webPreferences: {
-      preload: path.join(__dirname, "preload.ts"),
-      contextIsolation: true,
-      nodeIntegration: false,
-      sandbox: false,
-    },
+      preload: path.join(__dirname, "preload.js")
+    }
   });
   if (isDev) {
     await win.loadURL("http://localhost:5173");
     win.webContents.openDevTools({ mode: "detach" });
   } else {
-    const indexHTML = pathToFileURL(path.join(__dirname, "../dist/index.html")).href;
+    const indexHTML = pathToFileURL(
+      path.join(__dirname, "../dist/index.html")   // or ../web/index.html if you changed Vite outDir
+    ).href;
     await win.loadURL(indexHTML);
   }
-  win.webContents.setWindowOpenHandler(({ url }) => {
-    shell.openExternal(url);
-    return { action: "deny" };
-  });
 }
-app.whenReady().then(createWindow);
+app.whenReady().then(() => {
+  createWindow();
+  app.on("activate", () => {
+    if (BrowserWindow.getAllWindows().length === 0) createWindow();
+  });
+});
 app.on("window-all-closed", () => {
   if (process.platform !== "darwin") app.quit();
-});
-app.on("activate", () => {
-  if (BrowserWindow.getAllWindows().length === 0) createWindow();
 });
